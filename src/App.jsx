@@ -4,6 +4,7 @@ import ClientInfo from "./component/ClientInfo";
 import EmailTemplate from "./component/EmailTemplate";
 import logo from "./assets/iFlairlogo.webp";
 import Footer from "./component/Footer";
+import Login from "./component/Login";
 function App() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [companyUrl, setCompanyUrl] = useState("");
@@ -11,6 +12,7 @@ function App() {
   const [emailContent, setEmailContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [nullMessage, setNullMessage] = useState(false);
+  const [login, setLogin] = useState(false);
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -45,48 +47,54 @@ function App() {
           iFlair Client Prospecting
         </h1>
       </div>
-      {/* Input Fields */}
-      <div className="flex flex-col md:flex-row items-center justify-center bg-white p-4 mt-[40px] shadow-md gap-4">
-        <input
-          type="text"
-          className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-auto"
-          placeholder="Enter LinkedIn URL"
-          value={linkedinUrl}
-          onChange={(e) => setLinkedinUrl(e.target.value)}
-        />
-        <input
-          type="text"
-          className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-auto"
-          placeholder="Enter Company URL"
-          value={companyUrl}
-          onChange={(e) => setCompanyUrl(e.target.value)}
-        />
-        <button
-          onClick={handleSubmit}
-          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-        >
-          Submit
-        </button>
-      </div>
-
-      {/* Display Client Info and Tech Products/Services Vertically */}
-      {nullMessage && (
-        <div className="text-center text-red-600 font-medium mt-4">
-          Sorry, it's a technical error. Please press the Submit button again.
-        </div>
-      )}
-      <div className="mt-6 flex flex-col gap-6">
-        {loading ? (
-          <div className="flex justify-center">
-            <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+      {login ? (
+        <>
+          <div className="flex flex-col md:flex-row items-center justify-center bg-white p-4 mt-[40px] shadow-md gap-4">
+            <input
+              type="text"
+              className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-auto"
+              placeholder="Enter LinkedIn URL"
+              value={linkedinUrl}
+              onChange={(e) => setLinkedinUrl(e.target.value)}
+            />
+            <input
+              type="text"
+              className="border border-gray-300 rounded-lg p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 w-full md:w-auto"
+              placeholder="Enter Company URL"
+              value={companyUrl}
+              onChange={(e) => setCompanyUrl(e.target.value)}
+            />
+            <button
+              onClick={handleSubmit}
+              className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+            >
+              Submit
+            </button>
           </div>
-        ) : (
-          <>
-            {clientInfo && <ClientInfo data={clientInfo} />}
-            {emailContent && <EmailTemplate data={emailContent} />}
-          </>
-        )}
-      </div>
+
+          {/* Display Client Info and Tech Products/Services Vertically */}
+          {nullMessage && (
+            <div className="text-center text-red-600 font-medium mt-4">
+              Sorry, it's a technical error. Please press the Submit button
+              again.
+            </div>
+          )}
+          <div className="mt-6 flex flex-col gap-6">
+            {loading ? (
+              <div className="flex justify-center">
+                <div className="animate-spin rounded-full h-10 w-10 border-t-2 border-b-2 border-blue-500"></div>
+              </div>
+            ) : (
+              <>
+                {clientInfo && <ClientInfo data={clientInfo} />}
+                {emailContent && <EmailTemplate data={emailContent} />}
+              </>
+            )}
+          </div>
+        </>
+      ) : (
+        <><Login></Login></>
+      )}
       <Footer />
     </div>
   );
