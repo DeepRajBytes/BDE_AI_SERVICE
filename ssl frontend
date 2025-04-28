@@ -1,0 +1,51 @@
+Hello Deepraj,
+
+As discussed, I have created project on dev server below are the login details :-
+
+Project Name :  ai_for_bde
+Project URL : https://devgj.websiteserverhost.biz/ai_for_bde
+
+SSH / SFTP Login Details :-
+Host :  158.220.115.133
+Port : 5324
+Username :  ai_for_bde
+password : 9PScZWm3Pyb8
+
+DB Login Details :-
+DB URl :  https://devgj.websiteserverhost.biz/phpmyadmin/
+DB Name : ai_for_bde
+DB User : ai_for_bde
+DB PWD : 1V6JrthFphBR
+
+
+
+ssh -p 5324 ai_for_bde@158.220.115.133
+sftp://158.220.115.133
+bdeai.local
+
+filezilla
+
+npm install -g serve
+nohup serve -p 4173 &
+serve -p 4173
+
+
+for nvm use -
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+
+
+pm2 hosting ;-
+pm2 start "serve -s . -l 4173" --name vite-app
+pm2 save
+
+pm2 update :-
+pm2 stop 0
+pm2 delete 0
+pm2 start "serve -s . -l 4173" --name vite-app
+pm2 save
+
+
+sudo a2ensite react-vite.conf
+
+sudo a2dissite 000-default.conf

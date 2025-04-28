@@ -21,6 +21,11 @@ const ClientInfo = ({ data }) => {
     }));
   };
 
+  // ✅ Condition to enable/disable button
+  const isValidSelection =
+    Object.values(selectedPoints.tech).filter(Boolean).length >= 4 &&
+    Object.values(selectedPoints.notech).filter(Boolean).length >= 4;
+
   const handleSubmit = async () => {
     setLoading(true);
     setError(null);
@@ -34,11 +39,14 @@ const ClientInfo = ({ data }) => {
     };
 
     try {
-      const response = await fetch("http://127.0.0.1:5006/generateemail", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ selected_points: filteredSelections }),
-      });
+      const response = await fetch(
+        "http://158.220.115.133:5006/generateemail",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ selected_points: filteredSelections }),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to generate email");
 
@@ -49,6 +57,7 @@ const ClientInfo = ({ data }) => {
     } finally {
       setLoading(false);
     }
+
     console.log("Selected Points:", filteredSelections);
   };
 
@@ -84,10 +93,21 @@ const ClientInfo = ({ data }) => {
         ))}
       </ul>
 
+      {/* 📌 Note */}
+      <p className="text-sm text-red-500 mt-4">
+        <strong>Note:</strong> Please select at least{" "}
+        <strong>4 Technical</strong> and <strong>4 Non-Technical</strong> points
+        to enable the button.
+      </p>
+
       <button
         onClick={handleSubmit}
-        className="mt-4 bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
-        disabled={loading}
+        className={`mt-4 px-4 py-2 rounded-lg transition text-white ${
+          isValidSelection && !loading
+            ? "bg-blue-500 hover:bg-blue-600"
+            : "bg-gray-400 cursor-not-allowed"
+        }`}
+        disabled={!isValidSelection || loading}
       >
         {loading ? "Generating..." : "Generate Mail"}
       </button>
