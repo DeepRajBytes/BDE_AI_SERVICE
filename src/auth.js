@@ -1,4 +1,4 @@
-const API_URL = 'http://192.168.0.118:3001/api';
+const API_URL = 'http://158.220.115.133:3001/api';
 
 const storeResponse = (endpoint, responseData) => {
   try {
