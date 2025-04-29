@@ -1,10 +1,13 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import axios from "axios";
 import ClientInfo from "./component/ClientInfo";
 import EmailTemplate from "./component/EmailTemplate";
 import logo from "./assets/iFlairlogo.webp";
 import Footer from "./component/Footer";
 import Login from "./component/Login";
+import Signup from "./component/Signup";
+import { Navigate, Route, Routes, useNavigate } from "react-router-dom";
+import { getToken, removeToken } from "./auth";
 function App() {
   const [linkedinUrl, setLinkedinUrl] = useState("");
   const [companyUrl, setCompanyUrl] = useState("");
@@ -12,7 +15,8 @@ function App() {
   const [emailContent, setEmailContent] = useState("");
   const [loading, setLoading] = useState(false);
   const [nullMessage, setNullMessage] = useState(false);
-  const [login, setLogin] = useState(false);
+  const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const navigate = useNavigate();
 
   const handleSubmit = async () => {
     setLoading(true);
@@ -37,6 +41,30 @@ function App() {
       setLoading(false);
     }
   };
+  useEffect(() => {
+    // Check for existing token on app load
+    const token = getToken();
+    if (token) {
+      setIsLoggedIn(true);
+    }
+  }, []);
+  const handleLogin = (status) => {
+    setIsLoggedIn(status);
+  };
+  const handleLogout = () => {
+    removeToken();
+    setIsLoggedIn(false);
+    setLinkedinUrl("");
+    setCompanyUrl("");
+    setClientInfo(null);
+    setEmailContent("");
+    navigate("/signin");
+  };
+  const handleSignup = (status) => {
+    if (status) {
+      navigate("/signin");
+    }
+  };
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
@@ -47,8 +75,34 @@ function App() {
           iFlair Client Prospecting
         </h1>
       </div>
-      {login ? (
-        <>
+      <div className="absolute top-4 right-4">
+        {isLoggedIn ? (
+          <button
+            onClick={handleLogout}
+            className="bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition"
+          >
+            Logout
+          </button>
+        ) : (
+          <button
+          onClick={() => navigate("/signin")}
+          className="bg-blue-500 text-white px-4 py-2 rounded-lg hover:bg-blue-600 transition"
+        >
+          Login
+        </button>
+        )}
+      </div>
+
+      <Routes>
+        <Route path="/signin" element={
+          <Login onLogin={handleLogin} />
+        } />
+        <Route path="/signup" element={
+          <Signup onSignup={handleSignup} />
+        } />
+        <Route path="/" element={
+          isLoggedIn ? (
+            <>
           <div className="flex flex-col md:flex-row items-center justify-center bg-white p-4 mt-[40px] shadow-md gap-4">
             <input
               type="text"
@@ -93,8 +147,9 @@ function App() {
           </div>
         </>
       ) : (
-        <><Login></Login></>
-      )}
+        <Navigate to="/signin" replace />
+      )}/>
+      </Routes>
       <Footer />
     </div>
   );
