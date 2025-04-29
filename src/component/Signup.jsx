@@ -1,6 +1,6 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { signup, storeToken } from "../auth";
+import { getStoredResponses, signup, storeToken } from "../auth";
 
 const Signup = ({ onSignup }) => {
   const [formData, setFormData] = useState({
@@ -47,8 +47,10 @@ const Signup = ({ onSignup }) => {
           onSignup(true);
         }
         navigate("/signin");
+      } else if (response.success) {
+        navigate("/signin");
       } else {
-        throw new Error("Registration successful but no token received");
+        throw new Error("Registration failed - please try again");
       }
     } catch (err) {
       setError(err.message);
@@ -166,27 +168,6 @@ const Signup = ({ onSignup }) => {
           >
             Log in
           </Link>
-        </div>
-      </div>
-      <div className="mt-6 w-full max-w-md">
-        <h3 className="text-lg font-medium text-gray-900 mb-2">
-          API Responses
-        </h3>
-        <div className="bg-gray-50 p-4 rounded-lg max-h-60 overflow-y-auto">
-          {apiResponses.length === 0 ? (
-            <p className="text-gray-500">No responses yet</p>
-          ) : (
-            apiResponses.map((response, index) => (
-              <div key={index} className="mb-4 p-3 bg-white rounded shadow">
-                <pre className="text-xs text-gray-800 overflow-x-auto">
-                  {JSON.stringify(response.data, null, 2)}
-                </pre>
-                <p className="text-xs text-gray-500 mt-1">
-                  {new Date(response.timestamp).toLocaleString()}
-                </p>
-              </div>
-            ))
-          )}
         </div>
       </div>
     </div>

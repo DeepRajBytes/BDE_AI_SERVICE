@@ -1,0 +1,42 @@
+
+
+
+import { useState, useEffect } from 'react';
+import { Navigate, Outlet, useNavigate } from 'react-router-dom';
+import { getToken, removeToken, validateToken } from './auth';
+
+const ProtectedRoute = () => {
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    // Simple check - no API validation needed
+    const checkToken = async () => {
+      try {
+        const data = await validateToken()
+        console.log("datacvv",data);
+        
+      } catch (error) {
+        alert("Something Went Wrong")
+        navigate('/signin')
+      }
+    } 
+    checkToken()
+    const token = getToken();
+    setIsAuthenticated(!!token);
+    setLoading(false);
+  }, []);
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500" />
+      </div>
+    );
+  }
+
+  return isAuthenticated ? <Outlet /> : <Navigate to="/signin" replace />;
+};
+
+export default ProtectedRoute;

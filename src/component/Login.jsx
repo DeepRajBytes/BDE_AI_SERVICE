@@ -1,13 +1,12 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { getStoredResponses, login, storeToken } from "../auth";
+import { login, storeToken } from "../auth";
 
 const Login = ({ onLogin }) => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const [apiResponses, setApiResponses] = useState([]);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
@@ -23,30 +22,26 @@ const Login = ({ onLogin }) => {
         throw new Error("Password must be at least 6 characters");
       }
 
-      const { token, fullResponse } = await login({ email, password });
-
-      if (token) {
-        storeToken(token);
-        if (typeof onLogin === "function") {
-          onLogin(true);
-        }
-        navigate("/");
-      } else {
-        // This should theoretically never be reached because we throw if no token
-        throw new Error("Login successful but no token received");
+      const result = await login({ email, password });
+      console.log(result.userData?.data);
+    if (result.token) {
+      const useData = result.userData?.data
+      storeToken(result.token, useData);
+      if (typeof onLogin === "function") {
+        onLogin(true);
       }
-    } catch (err) {
-      setError(err.message);
-      console.error("Login error details:", err);
-    } finally {
-      setLoading(false);
+      navigate("/");
+    } else {
+      throw new Error("Authentication succeeded but no token was returned");
     }
+  } catch (err) {
+    setError(err.message);
+    console.error("Login error details:", err);
+  } finally {
+    setLoading(false);
+  }
   };
 
-  useEffect(() => {
-    const responses = getStoredResponses();
-    setApiResponses(responses.login || []);
-  }, []);
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-50">
@@ -116,27 +111,6 @@ const Login = ({ onLogin }) => {
             </Link>
           </div>
         </form>
-        <div className="mt-6">
-          <h3 className="text-lg font-medium text-gray-900 mb-2">
-            API Responses
-          </h3>
-          <div className="bg-gray-50 p-4 rounded-lg max-h-60 overflow-y-auto">
-            {apiResponses.length === 0 ? (
-              <p className="text-gray-500">No responses yet</p>
-            ) : (
-              apiResponses.map((response, index) => (
-                <div key={index} className="mb-4 p-3 bg-white rounded shadow">
-                  <pre className="text-xs text-gray-800 overflow-x-auto">
-                    {JSON.stringify(response.data, null, 2)}
-                  </pre>
-                  <p className="text-xs text-gray-500 mt-1">
-                    {new Date(response.timestamp).toLocaleString()}
-                  </p>
-                </div>
-              ))
-            )}
-          </div>
-        </div>
       </div>
     </div>
   );
